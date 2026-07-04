@@ -128,4 +128,276 @@
                 </div>
                 <div id="outputResult" class="bg-slate-800 rounded-xl p-6 hidden">
                     <h3 class="text-xl font-bold text-green-400 mb-4">Результат обработки:</h3>
-                    
+                    <div id="outputContent" class="font-mono text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Preview -->
+    <section class="bg-slate-950 py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8">Быстрый старт</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="code-block rounded-lg p-6 font-mono text-sm overflow-x-auto text-green-400 mb-6">
+<pre><code># Установка
+pip install -r requirements.txt
+
+# Использование СИН-слоя
+import torch
+from sfiral.neurons import SINLayer
+
+# Инициализация Сфирального Нейрона
+layer = SINLayer(in_features=10, out_features=5)
+x = torch.randn(32, 10)
+
+# Прямой проход через S-петлю
+output = layer(x)
+print(output.shape)  # torch.Size([32, 5])
+
+# Использование ФСИН (фрактальный вариант)
+from sfiral.neurons import FSINLayer
+
+fsin = FSINLayer(in_features=10, out_features=5, fractal_depth=3)
+output = fsin(x)
+print(output.shape)  # torch.Size([32, 5])</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Math Core -->
+    <section class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Математическое ядро</h2>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-sky-400 mb-4">Зеркальная антисимметрия</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    V⁻: r⁻(s) = (R·cos(θ+φ), R·sin(θ+φ), z₀+kz·θ)<br>
+                    V⁺: r⁺(s) = M·r⁻(−s) + c<br>
+                    где M — оператор зеркального отражения
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-purple-400 mb-4">S-петля (интерполяция)</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    R(s) = α(s)·r⁻(s) + β(s)·r⁺(s)<br>
+                    где α²(s) + β²(s) = 1<br>
+                    α(s) = cos(ψ(s)), β(s) = sin(ψ(s))
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-amber-400 mb-4">Сфиральное время</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    s ∈ ℝ — внутренний параметр эволюции<br>
+                    ρ(s) = dt/ds — скорость внешнего времени<br>
+                    dX/ds = F(X, φ(s), ρ(s))
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-green-400 mb-4">Фрактальное вложение</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    Fₖ(R(s)) = λₖ·R(μₖ·s) + dₖ<br>
+                    где 0 &lt; λₖ, μₖ &lt; 1 — масштаб<br>
+                    N — глубина фрактала
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Links -->
+    <section class="bg-slate-950 py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-8">Исходный код</h2>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/src/sfiral" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📁 src/sfiral/
+                </a>
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/docs" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📁 docs/
+                </a>
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📜 Лицензия (TERMS.md)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-slate-500 text-sm border-t border-slate-800">
+        <p>© 2025 Sfiralium Project. Based on the works of O.S. Basargin.</p>
+        <p class="mt-2">
+            Передача технологии осуществляется в соответствии с 
+            <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
+               class="text-sky-500 hover:underline">условиями открытой лицензии</a>.
+        </p>
+        <p class="mt-2">
+            Repository: 
+            <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core" class="text-sky-500 hover:underline">
+                github.com/sfiraliumlab-ux/Sfiralium-Core
+            </a>
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // === Sfiral Canvas Visualization ===
+        const canvas = document.getElementById('sfiralCanvas');
+        const ctx = canvas.getContext('2d');
+        let phase = 'V-';
+        let showSLoop = true;
+        let time = 0;
+        let animationId;
+
+        function drawSfiral() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 100;
+            
+            // Draw S-loop
+            if (showSLoop) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 3;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#fbbf24';
+                
+                for (let t = 0; t <= Math.PI * 2; t += 0.01) {
+                    const x = centerX + Math.cos(t + time) * radius * 1.5;
+                    const y = centerY + Math.sin(t * 2 + time) * radius * 0.3;
+                    if (t === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+            
+            // Draw V- coil (left)
+            ctx.beginPath();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#38bdf8';
+            
+            for (let t = 0; t <= Math.PI * 4; t += 0.05) {
+                const x = centerX - 120 + Math.cos(t + time) * (radius * 0.5);
+                const y = centerY + Math.sin(t + time) * (radius * 0.5) + t * 10;
+                if (t === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Draw V+ coil (right) — mirror antisymmetric
+            ctx.beginPath();
+            ctx.strokeStyle = '#a78bfa';
+            ctx.shadowColor = '#a78bfa';
+            
+            for (let t = 0; t <= Math.PI * 4; t += 0.05) {
+                const x = centerX + 120 + Math.cos(-t - time) * (radius * 0.5);
+                const y = centerY + Math.sin(-t - time) * (radius * 0.5) + t * 10;
+                if (t === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            
+            // Draw central node
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#fbbf24';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Labels
+            ctx.font = 'bold 16px monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('V⁻', centerX - 140, centerY - 60);
+            ctx.fillStyle = '#a78bfa';
+            ctx.fillText('V⁺', centerX + 120, centerY - 60);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('S-узел', centerX - 25, centerY - 20);
+            
+            time += 0.02;
+            animationId = requestAnimationFrame(drawSfiral);
+        }
+
+        drawSfiral();
+
+        // Controls
+        document.getElementById('togglePhase').addEventListener('click', () => {
+            phase = phase === 'V-' ? 'V+' : 'V-';
+            document.getElementById('phaseInfo').textContent = 
+                `Фаза: ${phase === 'V-' ? 'V⁻ (прошлое)' : 'V⁺ (будущее)'} → S-петля: ${showSLoop ? 'активна' : 'скрыта'}`;
+        });
+
+        document.getElementById('toggleSLoop').addEventListener('click', () => {
+            showSLoop = !showSLoop;
+            document.getElementById('phaseInfo').textContent = 
+                `Фаза: ${phase === 'V-' ? 'V⁻ (прошлое)' : 'V⁺ (будущее)'} → S-петля: ${showSLoop ? 'активна' : 'скрыта'}`;
+        });
+
+        document.getElementById('resetView').addEventListener('click', () => {
+            time = 0;
+            phase = 'V-';
+            showSLoop = true;
+            document.getElementById('phaseInfo').textContent = 
+                `Фаза: V⁻ (прошлое) → V⁺ (будущее) | S-петля: активна`;
+        });
+
+        // === Sfiral Neuron Demo ===
+        document.getElementById('processBtn').addEventListener('click', () => {
+            const inputStr = document.getElementById('inputVector').value;
+            const input = inputStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+            
+            if (input.length === 0) {
+                alert('Введите корректный вектор чисел');
+                return;
+            }
+            
+            // Simulate Sfiral processing
+            const vMinus = input.map(x => Math.tanh(x * 0.8));
+            const vPlus = input.map(x => -Math.tanh(x * 0.8));
+            const alpha = 0.6;
+            const beta = Math.sqrt(1 - alpha * alpha);
+            const output = input.map((_, i) => alpha * vMinus[i] + beta * vPlus[i]);
+            
+            // Display results
+            const outputDiv = document.getElementById('outputResult');
+            const outputContent = document.getElementById('outputContent');
+            outputDiv.classList.remove('hidden');
+            
+            outputContent.innerHTML = `
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-slate-400">Входной вектор (x):</span>
+                        <div class="text-white mt-1">[${input.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-sky-400">Ветвь V⁻ (прошлое):</span>
+                        <div class="text-white mt-1">[${vMinus.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-purple-400">Ветвь V⁺ (будущее):</span>
+                        <div class="text-white mt-1">[${vPlus.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-amber-400">S-петля (α=${alpha.toFixed(2)}, β=${beta.toFixed(2)}):</span>
+                        <div class="text-white mt-1">α·V⁻ + β·V⁺</div>
+                    </div>
+                    <div class="border-t border-slate-700 pt-3">
+                        <span class="text-green-400 font-bold">Выход (y):</span>
+                        <div class="text-white mt-1 font-bold">[${output.map(n => n.toFixed(4)).join(', ')}]</div>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
