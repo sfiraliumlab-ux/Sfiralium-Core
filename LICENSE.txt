@@ -1,0 +1,5 @@
+This project is released under the MIT License for scientific, educational, and non-commercial research purposes.
+
+Important: Commercial integration of the Sfiral Artificial Neurons (SAN/FSAN) or the underlying topological algorithms requires a separate written agreement with the author to preserve the philosophical and cultural context of the Sfiral.
+
+Please read TERMS.md for full details.
