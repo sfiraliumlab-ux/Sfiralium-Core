@@ -5,23 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sfiralium-Core | Topological Computing Framework</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         .sfiral-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
         .glow-text { text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
-        .sfiral-canvas { background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%); }
+        .sfiral-canvas { 
+            background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%); 
+            position: relative;
+            overflow: hidden;
+        }
+        #sfiralCanvas { display: block; width: 100%; height: 100%; }
         .code-block { background: #0f172a; border: 1px solid #334155; }
         .phase-active { animation: pulse 2s infinite; }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
-        }
-        .sfiral-rotate {
-            animation: rotate 20s linear infinite;
-            transform-origin: center;
-        }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -30,24 +28,6 @@
     <!-- Header -->
     <header class="sfiral-gradient border-b border-slate-700">
         <div class="container mx-auto px-6 py-16 text-center">
-            <div class="flex justify-center mb-6">
-                <svg width="120" height="120" viewBox="0 0 200 200" class="sfiral-rotate">
-                    <defs>
-                        <linearGradient id="sfiralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <!-- S-образная петля -->
-                    <path d="M 50 100 Q 100 50 150 100 T 50 100" 
-                          fill="none" stroke="url(#sfiralGrad)" stroke-width="3"/>
-                    <!-- Два зеркальных витка -->
-                    <circle cx="50" cy="100" r="25" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
-                    <circle cx="150" cy="100" r="25" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.8"/>
-                    <!-- Узел -->
-                    <circle cx="100" cy="100" r="5" fill="#fbbf24"/>
-                </svg>
-            </div>
             <h1 class="text-5xl font-bold text-sky-400 glow-text mb-4">Sfiralium-Core</h1>
             <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
                 Фреймворк топологических вычислений на базе принципа Сфирали.
@@ -68,25 +48,18 @@
         </div>
     </header>
 
-    <!-- Live Sfiral Visualization -->
+    <!-- Live Sfiral Visualization (Three.js) -->
     <section class="container mx-auto px-6 py-16">
-        <h2 class="text-3xl font-bold text-center mb-8 text-sky-400">Живая визуализация Сфирали</h2>
-        <div class="sfiral-canvas rounded-xl p-4 max-w-4xl mx-auto">
-            <canvas id="sfiralCanvas" width="800" height="500" class="w-full rounded-lg"></canvas>
-            <div class="flex justify-center gap-4 mt-4 flex-wrap">
-                <button id="togglePhase" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
-                    Переключить фазу
-                </button>
-                <button id="toggleSLoop" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition">
-                    Показать S-петлю
-                </button>
-                <button id="resetView" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg font-semibold transition">
-                    Сброс
-                </button>
-            </div>
-            <div class="mt-4 text-center text-slate-400 text-sm">
-                <span id="phaseInfo">Фаза: V⁻ (прошлое) → V⁺ (будущее) | S-петля: активна</span>
-            </div>
+        <h2 class="text-3xl font-bold text-center mb-8 text-sky-400">Живая 3D-визуализация Сфирали</h2>
+        <p class="text-center text-slate-400 mb-8 max-w-3xl mx-auto">
+            Математически точная модель: два зеркально-антисимметричных витка, соединённые S-образной петлёй фазового перехода. 
+            Алгоритм генерации основан на параметрических уравнениях S-дуги и инверсии координат.
+        </p>
+        <div class="sfiral-canvas rounded-xl p-4 max-w-4xl mx-auto border border-slate-700 shadow-2xl" style="height: 500px;">
+            <canvas id="sfiralCanvas"></canvas>
+        </div>
+        <div class="mt-4 text-center text-slate-500 text-sm">
+            <span class="phase-active">●</span> Вращение модели в реальном времени | Зеркальная антисимметрия (P_left = -P_right)
         </div>
     </section>
 
@@ -153,75 +126,8 @@ x = torch.randn(32, 10)
 
 # Прямой проход через S-петлю
 output = layer(x)
-print(output.shape)  # torch.Size([32, 5])
-
-# Использование ФСИН (фрактальный вариант)
-from sfiral.neurons import FSINLayer
-
-fsin = FSINLayer(in_features=10, out_features=5, fractal_depth=3)
-output = fsin(x)
 print(output.shape)  # torch.Size([32, 5])</code></pre>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Math Core -->
-    <section class="container mx-auto px-6 py-16">
-        <h2 class="text-3xl font-bold text-center mb-8">Математическое ядро</h2>
-        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-sky-400 mb-4">Зеркальная антисимметрия</h3>
-                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
-                    V⁻: r⁻(s) = (R·cos(θ+φ), R·sin(θ+φ), z₀+kz·θ)<br>
-                    V⁺: r⁺(s) = M·r⁻(−s) + c<br>
-                    где M — оператор зеркального отражения
-                </div>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-purple-400 mb-4">S-петля (интерполяция)</h3>
-                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
-                    R(s) = α(s)·r⁻(s) + β(s)·r⁺(s)<br>
-                    где α²(s) + β²(s) = 1<br>
-                    α(s) = cos(ψ(s)), β(s) = sin(ψ(s))
-                </div>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-amber-400 mb-4">Сфиральное время</h3>
-                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
-                    s ∈ ℝ — внутренний параметр эволюции<br>
-                    ρ(s) = dt/ds — скорость внешнего времени<br>
-                    dX/ds = F(X, φ(s), ρ(s))
-                </div>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-green-400 mb-4">Фрактальное вложение</h3>
-                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
-                    Fₖ(R(s)) = λₖ·R(μₖ·s) + dₖ<br>
-                    где 0 &lt; λₖ, μₖ &lt; 1 — масштаб<br>
-                    N — глубина фрактала
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- GitHub Links -->
-    <section class="bg-slate-950 py-16">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold mb-8">Исходный код</h2>
-            <div class="flex justify-center gap-4 flex-wrap">
-                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/src/sfiral" 
-                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
-                    📁 src/sfiral/
-                </a>
-                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/docs" 
-                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
-                    📁 docs/
-                </a>
-                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
-                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
-                    📜 Лицензия (TERMS.md)
-                </a>
             </div>
         </div>
     </section>
@@ -230,11 +136,6 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
     <footer class="text-center py-8 text-slate-500 text-sm border-t border-slate-800">
         <p>© 2025 Sfiralium Project. Based on the works of O.S. Basargin.</p>
         <p class="mt-2">
-            Передача технологии осуществляется в соответствии с 
-            <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
-               class="text-sky-500 hover:underline">условиями открытой лицензии</a>.
-        </p>
-        <p class="mt-2">
             Repository: 
             <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core" class="text-sky-500 hover:underline">
                 github.com/sfiraliumlab-ux/Sfiralium-Core
@@ -242,116 +143,121 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         </p>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Three.js Sfiral Engine -->
     <script>
-        // === Sfiral Canvas Visualization ===
-        const canvas = document.getElementById('sfiralCanvas');
-        const ctx = canvas.getContext('2d');
-        let phase = 'V-';
-        let showSLoop = true;
-        let time = 0;
-        let animationId;
+        // --- SFIRAL 3D ENGINE (Based on Blender Script) ---
+        function initSfiralVisualization() {
+            const canvas = document.getElementById('sfiralCanvas');
+            const container = canvas.parentElement;
 
-        function drawSfiral() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = 100;
-            
-            // Draw S-loop
-            if (showSLoop) {
-                ctx.beginPath();
-                ctx.strokeStyle = '#fbbf24';
-                ctx.lineWidth = 3;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#fbbf24';
-                
-                for (let t = 0; t <= Math.PI * 2; t += 0.01) {
-                    const x = centerX + Math.cos(t + time) * radius * 1.5;
-                    const y = centerY + Math.sin(t * 2 + time) * radius * 0.3;
-                    if (t === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 8, 12);
+            camera.lookAt(0, 0, 0);
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x38bdf8, 1.5, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            const pointLight2 = new THREE.PointLight(0xa78bfa, 1, 100);
+            pointLight2.position.set(-10, -5, -10);
+            scene.add(pointLight2);
+
+            // --- SFIRAL GEOMETRY GENERATION (Exact port from Blender) ---
+            function createSphiralPoints() {
+                // Scaled down for web (Original: R=50, H=30. Web: R=5, H=3)
+                const R_coil = 5.0; 
+                const R_arc = R_coil / 2.0;
+                const Height_Coil = 3.0; 
+                const Height_S = 1.0; 
+                const Turns = 1.0;
+                const Resolution = 1000;
+
+                const rightPoints = [];
+
+                // PART 1: SEMICIRCLE (S-Arc)
+                const res_arc = Math.floor(Resolution * 0.3);
+                for (let i = 0; i <= res_arc; i++) {
+                    const t = i / res_arc;
+                    const phi = Math.PI * (1 - t);
+                    const x = R_arc + R_arc * Math.cos(phi);
+                    const y = -R_arc * Math.sin(phi);
+                    const z = (Height_S / 2) * t;
+                    rightPoints.push(new THREE.Vector3(x, y, z));
                 }
-                ctx.stroke();
-                ctx.shadowBlur = 0;
+
+                // PART 2: MAIN COIL
+                const res_coil = Math.floor(Resolution * 0.7);
+                const z_start_coil = Height_S / 2;
+                for (let i = 1; i <= res_coil; i++) {
+                    const t = i / res_coil;
+                    const theta = Turns * 2 * Math.PI * t;
+                    const x = R_coil * Math.cos(theta);
+                    const y = R_coil * Math.sin(theta);
+                    const z = z_start_coil + (Height_Coil * t);
+                    rightPoints.push(new THREE.Vector3(x, y, z));
+                }
+
+                // ASSEMBLY & ANTISYMMETRY
+                const finalCoords = [];
+                
+                // Left part (Mirror inverted)
+                for (let i = rightPoints.length - 1; i >= 0; i--) {
+                    const p = rightPoints[i];
+                    if (p.x === 0 && p.y === 0) continue;
+                    // ANTISYMMETRY: P_left = -P_right
+                    finalCoords.push(new THREE.Vector3(-p.x, -p.y, -p.z));
+                }
+
+                // Right part
+                finalCoords.push(...rightPoints);
+
+                return finalCoords;
             }
+
+            const points = createSphiralPoints();
+            const curve = new THREE.CatmullRomCurve3(points);
             
-            // Draw V- coil (left)
-            ctx.beginPath();
-            ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#38bdf8';
+            // Tube geometry (Analog of Blender's bevel_depth = 2.0)
+            const geometry = new THREE.TubeGeometry(curve, 200, 0.15, 12, false);
             
-            for (let t = 0; t <= Math.PI * 4; t += 0.05) {
-                const x = centerX - 120 + Math.cos(t + time) * (radius * 0.5);
-                const y = centerY + Math.sin(t + time) * (radius * 0.5) + t * 10;
-                if (t === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+            // Material (Glowing Sky-400)
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0x38bdf8,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.5,
+                roughness: 0.2,
+                metalness: 0.9
+            });
+            
+            const sphiralMesh = new THREE.Mesh(geometry, material);
+            scene.add(sphiralMesh);
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                sphiralMesh.rotation.y += 0.005;
+                sphiralMesh.rotation.x += 0.002;
+                renderer.render(scene, camera);
             }
-            ctx.stroke();
-            
-            // Draw V+ coil (right) — mirror antisymmetric
-            ctx.beginPath();
-            ctx.strokeStyle = '#a78bfa';
-            ctx.shadowColor = '#a78bfa';
-            
-            for (let t = 0; t <= Math.PI * 4; t += 0.05) {
-                const x = centerX + 120 + Math.cos(-t - time) * (radius * 0.5);
-                const y = centerY + Math.sin(-t - time) * (radius * 0.5) + t * 10;
-                if (t === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-            
-            // Draw central node
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#fbbf24';
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = '#fbbf24';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            // Labels
-            ctx.font = 'bold 16px monospace';
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillText('V⁻', centerX - 140, centerY - 60);
-            ctx.fillStyle = '#a78bfa';
-            ctx.fillText('V⁺', centerX + 120, centerY - 60);
-            ctx.fillStyle = '#fbbf24';
-            ctx.fillText('S-узел', centerX - 25, centerY - 20);
-            
-            time += 0.02;
-            animationId = requestAnimationFrame(drawSfiral);
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
         }
 
-        drawSfiral();
-
-        // Controls
-        document.getElementById('togglePhase').addEventListener('click', () => {
-            phase = phase === 'V-' ? 'V+' : 'V-';
-            document.getElementById('phaseInfo').textContent = 
-                `Фаза: ${phase === 'V-' ? 'V⁻ (прошлое)' : 'V⁺ (будущее)'} → S-петля: ${showSLoop ? 'активна' : 'скрыта'}`;
-        });
-
-        document.getElementById('toggleSLoop').addEventListener('click', () => {
-            showSLoop = !showSLoop;
-            document.getElementById('phaseInfo').textContent = 
-                `Фаза: ${phase === 'V-' ? 'V⁻ (прошлое)' : 'V⁺ (будущее)'} → S-петля: ${showSLoop ? 'активна' : 'скрыта'}`;
-        });
-
-        document.getElementById('resetView').addEventListener('click', () => {
-            time = 0;
-            phase = 'V-';
-            showSLoop = true;
-            document.getElementById('phaseInfo').textContent = 
-                `Фаза: V⁻ (прошлое) → V⁺ (будущее) | S-петля: активна`;
-        });
-
-        // === Sfiral Neuron Demo ===
+        // --- SFIRAL NEURON DEMO LOGIC ---
         document.getElementById('processBtn').addEventListener('click', () => {
             const inputStr = document.getElementById('inputVector').value;
             const input = inputStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
@@ -361,14 +267,13 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
                 return;
             }
             
-            // Simulate Sfiral processing
+            // Simulate Sfiral processing (Antisymmetry + S-loop integration)
             const vMinus = input.map(x => Math.tanh(x * 0.8));
-            const vPlus = input.map(x => -Math.tanh(x * 0.8));
+            const vPlus = input.map(x => -Math.tanh(x * 0.8)); // Antisymmetry
             const alpha = 0.6;
             const beta = Math.sqrt(1 - alpha * alpha);
             const output = input.map((_, i) => alpha * vMinus[i] + beta * vPlus[i]);
             
-            // Display results
             const outputDiv = document.getElementById('outputResult');
             const outputContent = document.getElementById('outputContent');
             outputDiv.classList.remove('hidden');
@@ -384,7 +289,7 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
                         <div class="text-white mt-1">[${vMinus.map(n => n.toFixed(3)).join(', ')}]</div>
                     </div>
                     <div>
-                        <span class="text-purple-400">Ветвь V⁺ (будущее):</span>
+                        <span class="text-purple-400">Ветвь V⁺ (будущее / Антисимметрия):</span>
                         <div class="text-white mt-1">[${vPlus.map(n => n.toFixed(3)).join(', ')}]</div>
                     </div>
                     <div>
@@ -398,6 +303,9 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
                 </div>
             `;
         });
+
+        // Initialize 3D Engine when DOM is ready
+        document.addEventListener('DOMContentLoaded', initSfiralVisualization);
     </script>
 </body>
 </html>
