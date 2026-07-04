@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sfiral-Core | Topological Computing</title>
+    <title>Sfiralium-Core | Topological Computing Framework</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .sfiral-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .sfiral-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
         .glow-text { text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+        .sfiral-canvas { background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%); }
+        .code-block { background: #0f172a; border: 1px solid #334155; }
+        .phase-active { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .sfiral-rotate {
+            animation: rotate 20s linear infinite;
+            transform-origin: center;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans antialiased">
@@ -15,59 +30,102 @@
     <!-- Header -->
     <header class="sfiral-gradient border-b border-slate-700">
         <div class="container mx-auto px-6 py-16 text-center">
-            <h1 class="text-5xl font-bold text-sky-400 glow-text mb-4">Sfiral-Core</h1>
-            <p class="text-xl text-slate-400 max-w-2xl mx-auto">
-                Фреймворк топологических вычислений на базе принципа Сфирали. 
-                Зеркальная антисимметрия. S-петля. Фрактальная вложенность.
+            <div class="flex justify-center mb-6">
+                <svg width="120" height="120" viewBox="0 0 200 200" class="sfiral-rotate">
+                    <defs>
+                        <linearGradient id="sfiralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- S-образная петля -->
+                    <path d="M 50 100 Q 100 50 150 100 T 50 100" 
+                          fill="none" stroke="url(#sfiralGrad)" stroke-width="3"/>
+                    <!-- Два зеркальных витка -->
+                    <circle cx="50" cy="100" r="25" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
+                    <circle cx="150" cy="100" r="25" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.8"/>
+                    <!-- Узел -->
+                    <circle cx="100" cy="100" r="5" fill="#fbbf24"/>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-sky-400 glow-text mb-4">Sfiralium-Core</h1>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
+                Фреймворк топологических вычислений на базе принципа Сфирали.
+                Зеркальная антисимметрия. S-петля фазового перехода. Фрактальная вложенность.
             </p>
-            <div class="mt-8 flex justify-center gap-4">
-                <a href="https://github.com/ВАШ_НИК/Sfiral-Core" class="px-6 py-3 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">GitHub Repo</a>
-                <a href="#docs" class="px-6 py-3 border border-slate-600 hover:border-sky-400 rounded-lg font-semibold transition">Документация</a>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core" 
+                   class="px-6 py-3 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                    GitHub Repository
+                </a>
+                <a href="#docs" class="px-6 py-3 border border-slate-600 hover:border-sky-400 rounded-lg font-semibold transition">
+                    Документация
+                </a>
+                <a href="#demo" class="px-6 py-3 border border-slate-600 hover:border-sky-400 rounded-lg font-semibold transition">
+                    Демо
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- Features -->
+    <!-- Live Sfiral Visualization -->
     <section class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-8 text-sky-400">Живая визуализация Сфирали</h2>
+        <div class="sfiral-canvas rounded-xl p-4 max-w-4xl mx-auto">
+            <canvas id="sfiralCanvas" width="800" height="500" class="w-full rounded-lg"></canvas>
+            <div class="flex justify-center gap-4 mt-4 flex-wrap">
+                <button id="togglePhase" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                    Переключить фазу
+                </button>
+                <button id="toggleSLoop" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition">
+                    Показать S-петлю
+                </button>
+                <button id="resetView" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg font-semibold transition">
+                    Сброс
+                </button>
+            </div>
+            <div class="mt-4 text-center text-slate-400 text-sm">
+                <span id="phaseInfo">Фаза: V⁻ (прошлое) → V⁺ (будущее) | S-петля: активна</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="docs" class="container mx-auto px-6 py-16">
         <h2 class="text-3xl font-bold text-center mb-12">Архитектура Сфиральных Нейронов (СИН)</h2>
         <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-sky-400 text-4xl mb-4">⟳</div>
                 <h3 class="text-xl font-bold text-sky-400 mb-2">V⁻ и V⁺ Ветви</h3>
                 <p class="text-slate-400">Два зеркально-антисимметричных канала обработки данных, компенсирующих локальные шумы и искажения.</p>
             </div>
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-sky-400 mb-2">S-Петля (Phase Gate)</h3>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-purple-400 text-4xl mb-4">∞</div>
+                <h3 class="text-xl font-bold text-purple-400 mb-2">S-Петля (Phase Gate)</h3>
                 <p class="text-slate-400">Узел фазового перехода, где происходит инверсия параметров и топологическая интеграция сигналов.</p>
             </div>
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                <h3 class="text-xl font-bold text-sky-400 mb-2">Фрактальность (ФСИН)</h3>
-                <p class="text-slate-400">Рекурсивная вложенность слоев для анализа данных на разных масштабах без потери когерентности.</p>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-amber-400 text-4xl mb-4">❋</div>
+                <h3 class="text-xl font-bold text-amber-400 mb-2">Фрактальность (ФСИН)</h3>
+                <p class="text-slate-400">Рекурсивная вложенность слоёв для многомасштабного анализа данных без потери когерентности.</p>
             </div>
         </div>
     </section>
 
-    <!-- Code Preview -->
-    <section id="docs" class="bg-slate-950 py-16">
+    <!-- Interactive Demo -->
+    <section id="demo" class="bg-slate-950 py-16">
         <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-8">Быстрый старт</h2>
-            <div class="bg-slate-800 rounded-lg p-6 font-mono text-sm overflow-x-auto text-green-400">
-<pre><code>import torch
-from sfiral.neurons import SINLayer
-
-# Инициализация Сфирального Нейрона
-layer = SINLayer(in_features=10, out_features=5)
-x = torch.randn(32, 10)
-
-# Прямой проход через S-петлю
-output = layer(x)</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <footer class="text-center py-8 text-slate-500 text-sm border-t border-slate-800">
-        <p>© 2024 Sfiralium Project. Based on the works of O.S. Basargin.</p>
-        <p class="mt-2">Передача технологии осуществляется в соответствии с <a href="https://github.com/ВАШ_НИК/Sfiral-Core/blob/main/TERMS.md" class="text-sky-500 hover:underline">условиями открытой лицензии</a>.</p>
-    </footer>
-
-</body>
-</html>
+            <h2 class="text-3xl font-bold text-center mb-8">Интерактивное демо: СИН-слой</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font-bold text-sky-400 mb-4">Введите входные данные (вектор):</h3>
+                    <input type="text" id="inputVector" value="0.5, -0.3, 0.8, -0.1, 0.6" 
+                           class="w-full p-3 bg-slate-900 border border-slate-700 rounded-lg text-white mb-4"
+                           placeholder="Например: 0.5, -0.3, 0.8, -0.1, 0.6">
+                    <button id="processBtn" class="px-6 py-3 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                        Обработать через СИН-слой
+                    </button>
+                </div>
+                <div id="outputResult" class="bg-slate-800 rounded-xl p-6 hidden">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">Результат обработки:</h3>
+                    
