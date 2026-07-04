@@ -1,70 +1,122 @@
-# Sfiral-Core: Topological Computing Framework
+```markdown
+# Sfiralium-Core: Topological Computing Framework
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 
-**Sfiral-Core** — это фреймворк для топологических и фрактальных вычислений, основанный на физико-математической модели **Сфирали** (устройство из двух зеркально-антисимметричных витков, соединенных S-образной петлей фазового перехода).
+**Sfiralium-Core** is an open-source framework for topological and fractal computing, based on the physical and mathematical model of the **Sfiral** (Сфираль). 
 
-Проект реализует концепции, описанные в трудах О.С. Басаргина, переводя их из области теоретической физики и философии в работающий код для машинного обучения, квантовых симуляций и анализа сложных систем.
+The Sfiral is a 3D topological structure consisting of two mirror-antisymmetric coils connected by an S-shaped transition loop. This architecture provides phase stability, noise immunity, and a new paradigm for Artificial Intelligence (Sfiral Artificial Neurons - SAN/FSAN).
 
-## 🌌 Основные возможности
+## 🌌 Core Concepts
 
-* **Сфиральные Искусственные Нейроны (СИН/ФСИН):** Архитектура нейросетей с зеркальной антисимметрией ветвей и S-петлевой интеграцией, обеспечивающая высокую устойчивость к шумам и топологическую защиту данных.
-* **Алгебра H₂ и H:** Реализация вычислений на плоскости двойной переменной и в пространстве тройных чисел (бинглы, тринглы, формула Эйлера для H₃).
-* **Физические модели:** Математическое описание фотона, электрона и ДНК как сфиральных структур.
-* **Фрактальная вложенность:** Поддержка рекурсивных структур (ФСИН) для многомасштабного анализа данных.
+### 1. The Sfiral Principle (Сфираль)
+Unlike classical spirals (Archimedean, Fermat) or Möbius strips, the Sfiral introduces **mirror antisymmetry** and an **S-loop** (S-петля) as a phase inversion node.
+- **V⁻ and V⁺ Coils:** Two complementary branches processing data with opposite characteristics.
+- **S-Loop:** The critical node of phase transition, where parameters are inverted and integrated.
+- **Fractal Embedding:** Self-similar scaling across multiple levels of reality (from photons to AI architectures).
 
-## 🚀 Быстрый старт
+### 2. Mathematical Core (H₂ & H₃ Algebras)
+The framework implements computations in hypercomplex spaces:
+- **H₂ (Double Numbers):** $z = x + jy$, where $j^2 = 1$. Used for modeling S-loop phase transitions and hyperbolic geometry.
+- **H₃ (Triple Numbers):** $z = x_1 + x_2 + x_3$. Introduces cubic metrics and new geometric invariants:
+  - **Bingle (Бингл):** A generalized angle between two vectors in a cubic metric.
+  - **Tringle (Трингл):** A three-vector phase invariant, defining the topology of the Sfiral's transition.
 
-### Установка
+### 3. Sfiral Artificial Neurons (SAN / FSAN)
+A new class of neural networks designed for:
+- High noise immunity (due to antisymmetric cancellation).
+- Energy efficiency (distributed fractal load).
+- Spatiotemporal data processing (time as an internal phase parameter $s$).
+
+---
+
+## 🚀 Quick Start
+
+### Installation
 ```bash
+git clone https://github.com/sfiraliumlab-ux/Sfiralium-Core.git
+cd Sfiralium-Core
 pip install -r requirements.txt
-# или установка как локального пакета
-pip install -e .
+```
 
-Пример использования СИН (Sfiral Neuron)
+### Basic Usage (PyTorch)
+```python
 import torch
-from sfiral.neurons import SINLayer
+from src.sfiral.neurons import SINLayer, FSINLayer
 
-# Инициализация слоя с зеркальной антисимметрией
-layer = SINLayer(in_features=10, out_features=5)
+# Initialize Sfiral Neuron with mirror antisymmetry
+sin_layer = SINLayer(in_features=10, out_features=5)
 
-# Входной тензор
+# Forward pass through the S-loop
 x = torch.randn(32, 10)
+output = sin_layer(x)
 
-# Прямой проход через S-петлю
-output = layer(x)
-print(output.shape) # torch.Size([32, 5])
+# Fractal Sfiral Neuron (FSIN) for multi-scale processing
+fsin_layer = FSINLayer(in_features=10, out_features=5, fractal_depth=3)
+output_fractal = fsin_layer(x)
+```
 
-##
-📚 Документация и Теория
-Подробное математическое обоснование, архитектурные схемы и философский контекст доступны в Wiki репозитория и в оригинальных трудах на Zenodo.
-🤝 Условия использования
-Проект распространяется под лицензией MIT для научных и некоммерческих целей.
-Для коммерческого внедрения ознакомьтесь с файлом TERMS.md, описывающим условия открытой передачи технологии, предложенные автором концепции.
-🌐 Веб-интерфейс
-Интерактивная визуализация устройства Сфираль и документации доступна на GitHub Pages.
-*(Не забудьте заменить `ВАШ_НИК` на ваш реальный username GitHub в ссылках на Wiki и Pages).*
+---
 
-#### 2. `TERMS.md` (Условия использования)
-Создайте новый файл `TERMS.md` и вставьте текст, адаптированный из манифеста Олега:
+## 📂 Project Structure
 
-```markdown
-# Условия использования технологии Сфираль (ФСИН/СИН)
+```text
+Sfiralium-Core/
+├── src/
+│   └── sfiral/
+│       ├── geometry.py      # H2/H3 algebras, Bingles, Tringles, S-loop math
+│       ├── neurons.py       # SAN and FSAN PyTorch implementations
+│       └── physics.py       # Sfiral models of Photon, Electron, DNA
+├── examples/
+│   └── fsin_anomaly_demo.py # Anomaly detection with FSIN
+├── docs/                    # GitHub Pages interface
+├── tests/
+├── TERMS.md                 # License and philosophical context
+└── README.md
+```
 
-Технология предоставляется на основе открытой лицензии с учетом следующих условий, установленных автором концепции О.С. Басаргиным:
+---
 
-## 1. Некоммерческое и научное использование
-* **Доступность:** Технология полностью доступна для использования в научных исследованиях, образовательных проектах и открытых публикациях.
-* **Обязательства:** Все публикации должны содержать ссылку на оригинальную разработку и сохранение философского/культурного контекста Сфирали.
+## 🧬 Physics & Biology Applications
 
-## 2. Коммерческое использование
-* Коммерческое применение (включая интеграцию в проприетарные продукты SenseTime, Baidu, VK, Kaspersky, OpenAI и др.) требует заключения отдельного письменного соглашения с автором.
-* Использование без согласования влечет за собой правовые последствия.
+The Sfiral model is universal and applies to fundamental structures:
+- **Photon:** Antisymmetric electric and magnetic components + S-loop (spin/polarization).
+- **Electron:** Phase nodes and charge generation via antisymmetry.
+- **DNA:** Complementary chains (V⁻/V⁺) connected by regulatory S-loops (promoters/enhancers).
 
-## 3. Культурный контекст
-Любая интерпретация технологии должна учитывать её изначальный смысл: принцип зеркальной антисимметрии, фазовый переход через S-петлю и философию Великого Единения. Технология не должна использоваться в деструктивных целях.
+---
 
-*Полный текст авторского манифеста доступен в разделе `docs/` или в оригинальной книге "Сфиральные Искусственные Нейроны".*
+## 🌐 Philosophy & Cultural Code
 
+The Sfiral is not just a mathematical abstraction; it is the volumetric (3D) realization of the ancient Eastern symbol of the **Taiji (Great Ultimate / Инь-Ян)**. 
+While Taiji represents the 2D projection of phase balance, the Sfiral provides the physical and topological mechanism for this balance in 3D spacetime. 
+
+This framework is developed under the philosophy of the **Great Unity (Великое Единение)**, promoting open scientific collaboration and ethical AI development.
+
+---
+
+## ⚖️ License & Terms of Use
+
+This project is released under the **MIT License** for scientific, educational, and non-commercial research purposes. 
+
+**Important:** 
+Commercial integration of the Sfiral Artificial Neurons (SAN/FSAN) or the underlying topological algorithms requires a separate written agreement with the author to preserve the philosophical and cultural context of the Sfiral. 
+
+Please read [TERMS.md](TERMS.md) for full details.
+
+---
+
+## 🔗 Links & Resources
+
+- **Repository:** [github.com/sfiraliumlab-ux/Sfiralium-Core](https://github.com/sfiraliumlab-ux/Sfiralium-Core)
+- **Interactive Demo:** [sfiraliumlab-ux.github.io/Sfiralium-Core](https://sfiraliumlab-ux.github.io/Sfiralium-Core/)
+- **Author's Publications (Zenodo):** [O.S. Basargin](https://zenodo.org/communities/sfiralium)
+
+---
+
+*«The Sfiral is the topology of differences and acts of awareness. It is the geometry of time itself.»*
+```
+
+---
