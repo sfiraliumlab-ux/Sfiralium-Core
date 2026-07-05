@@ -3,285 +3,493 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sfiralium Core - 3D Visualization</title>
+    <title>Sfiralium-Core | Topological Computing Framework</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; background: #0f172a; }
-        #canvas-container { width: 100vw; height: 100vh; }
-        .info-panel {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: #38bdf8;
-            font-family: 'Courier New', monospace;
-            max-width: 400px;
-            z-index: 100;
+        .sfiral-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+        .glow-text { text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+        .sfiral-canvas { background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%); }
+        .code-block { background: #0f172a; border: 1px solid #334155; }
+        .phase-active { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #38bdf8;
-            font-size: 24px;
-            font-family: 'Courier New', monospace;
-            z-index: 200;
+        #sfiralCanvas3D {
+            width: 100%;
+            height: 500px;
+            border-radius: 0.75rem;
+            outline: none;
         }
     </style>
 </head>
-<body>
-    <div id="loading" class="loading">Загрузка 3D движка...</div>
-    <div id="canvas-container"></div>
-    
-    <div class="info-panel">
-        <h2 class="text-xl font-bold mb-2 text-purple-400">Sfiralium Core</h2>
-        <p class="text-sm mb-2">3D визуализация сфиральной структуры</p>
-        <div class="text-xs space-y-1">
-            <p>• Зеркальная антисимметрия</p>
-            <p>• S-образный переход</p>
-            <p>• Фрактальная геометрия</p>
-            <p class="mt-2 text-sky-300">Вращение: автоматическое</p>
-            <p class="text-sky-300">Масштаб: 0.5 (оптимизировано)</p>
+<body class="bg-slate-900 text-slate-200 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="sfiral-gradient border-b border-slate-700">
+        <div class="container mx-auto px-6 py-16 text-center">
+            <div class="flex justify-center mb-6">
+                <svg width="120" height="120" viewBox="0 0 200 200" class="animate-spin" style="animation-duration: 20s;">
+                    <defs>
+                        <linearGradient id="sfiralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M 50 100 Q 100 50 150 100 T 50 100" 
+                          fill="none" stroke="url(#sfiralGrad)" stroke-width="3"/>
+                    <circle cx="50" cy="100" r="25" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
+                    <circle cx="150" cy="100" r="25" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.8"/>
+                    <circle cx="100" cy="100" r="5" fill="#fbbf24"/>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-sky-400 glow-text mb-4">Sfiralium-Core</h1>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
+                Фреймворк топологических вычислений на базе принципа Сфирали.
+                Зеркальная антисимметрия. S-петля фазового перехода. Фрактальная вложенность.
+            </p>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core" 
+                   class="px-6 py-3 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                    GitHub Repository
+                </a>
+                <a href="#docs" class="px-6 py-3 border border-slate-600 hover:border-sky-400 rounded-lg font-semibold transition">
+                    Документация
+                </a>
+                <a href="#demo" class="px-6 py-3 border border-slate-600 hover:border-sky-400 rounded-lg font-semibold transition">
+                    Демо
+                </a>
+            </div>
         </div>
-    </div>
+    </header>
 
+    <!-- 3D Sfiral Visualization -->
+    <section class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-8 text-sky-400">3D Визуализация Сфирали</h2>
+        <div class="sfiral-canvas rounded-xl p-4 max-w-6xl mx-auto">
+            <div id="sfiralCanvas3D"></div>
+            <div class="flex justify-center gap-4 mt-4 flex-wrap">
+                <button id="toggleRotation" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                    Пауза вращения
+                </button>
+                <button id="toggleWires" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition">
+                    Каркас/Поверхность
+                </button>
+                <button id="resetCamera" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg font-semibold transition">
+                    Сброс камеры
+                </button>
+            </div>
+            <div class="mt-4 text-center text-slate-400 text-sm">
+                <span id="phaseInfo">V⁻ (прошлое) ⟷ V⁺ (будущее) | S-петля активна | Используйте мышь для вращения</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="docs" class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-12">Архитектура Сфиральных Нейронов (СИН)</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-sky-400 text-4xl mb-4">⟳</div>
+                <h3 class="text-xl font-bold text-sky-400 mb-2">V⁻ и V⁺ Ветви</h3>
+                <p class="text-slate-400">Два зеркально-антисимметричных канала обработки данных, компенсирующих локальные шумы и искажения.</p>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-purple-400 text-4xl mb-4">∞</div>
+                <h3 class="text-xl font-bold text-purple-400 mb-2">S-Петля (Phase Gate)</h3>
+                <p class="text-slate-400">Узел фазового перехода, где происходит инверсия параметров и топологическая интеграция сигналов.</p>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-sky-400 transition">
+                <div class="text-amber-400 text-4xl mb-4">❋</div>
+                <h3 class="text-xl font-bold text-amber-400 mb-2">Фрактальность (ФСИН)</h3>
+                <p class="text-slate-400">Рекурсивная вложенность слоёв для многомасштабного анализа данных без потери когерентности.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo -->
+    <section id="demo" class="bg-slate-950 py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8">Интерактивное демо: СИН-слой</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font-bold text-sky-400 mb-4">Введите входные данные (вектор):</h3>
+                    <input type="text" id="inputVector" value="0.5, -0.3, 0.8, -0.1, 0.6" 
+                           class="w-full p-3 bg-slate-900 border border-slate-700 rounded-lg text-white mb-4"
+                           placeholder="Например: 0.5, -0.3, 0.8, -0.1, 0.6">
+                    <button id="processBtn" class="px-6 py-3 bg-sky-600 hover:bg-sky-500 rounded-lg font-semibold transition">
+                        Обработать через СИН-слой
+                    </button>
+                </div>
+                <div id="outputResult" class="bg-slate-800 rounded-xl p-6 hidden">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">Результат обработки:</h3>
+                    <div id="outputContent" class="font-mono text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Preview -->
+    <section class="bg-slate-950 py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8">Быстрый старт</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="code-block rounded-lg p-6 font-mono text-sm overflow-x-auto text-green-400 mb-6">
+<pre><code># Установка
+pip install -r requirements.txt
+
+# Использование СИН-слоя
+import torch
+from sfiral.neurons import SINLayer
+
+# Инициализация Сфирального Нейрона
+layer = SINLayer(in_features=10, out_features=5)
+x = torch.randn(32, 10)
+
+# Прямой проход через S-петлю
+output = layer(x)
+print(output.shape)  # torch.Size([32, 5])
+
+# Использование ФСИН (фрактальный вариант)
+from sfiral.neurons import FSINLayer
+
+fsin = FSINLayer(in_features=10, out_features=5, fractal_depth=3)
+output = fsin(x)
+print(output.shape)  # torch.Size([32, 5])</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Math Core -->
+    <section class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Математическое ядро</h2>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-sky-400 mb-4">Зеркальная антисимметрия</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    V⁻: r(s) = (R·cos(θ+φ), R·sin(θ+φ), z₀+kz·θ)<br>
+                    V⁺: r⁺(s) = M·r⁻(−s) + c<br>
+                    где M — оператор зеркального отражения
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-purple-400 mb-4">S-петля (интерполяция)</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    R(s) = α(s)·r⁻(s) + β(s)·r⁺(s)<br>
+                    где α²(s) + β²(s) = 1<br>
+                    α(s) = cos(ψ(s)), β(s) = sin(ψ(s))
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-amber-400 mb-4">Сфиральное время</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    s ∈ ℝ — внутренний параметр эволюции<br>
+                    ρ(s) = dt/ds — скорость внешнего времени<br>
+                    dX/ds = F(X, φ(s), ρ(s))
+                </div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-xl font-bold text-green-400 mb-4">Фрактальное вложение</h3>
+                <div class="font-mono text-sm text-slate-300 bg-slate-900 p-4 rounded-lg">
+                    Fₖ(R(s)) = λₖ·R(μₖ·s) + dₖ<br>
+                    где 0 &lt; λₖ, μₖ &lt; 1 — масштаб<br>
+                    N — глубина фрактала
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Links -->
+    <section class="bg-slate-950 py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-8">Исходный код</h2>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/src/sfiral" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📁 src/sfiral/
+                </a>
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/tree/main/docs" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📁 docs/
+                </a>
+                <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
+                   class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition border border-slate-700">
+                    📜 Лицензия (TERMS.md)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-slate-500 text-sm border-t border-slate-800">
+        <p>© 2025 Sfiralium Project. Based on the works of O.S. Basargin.</p>
+        <p class="mt-2">
+            Передача технологии осуществляется в соответствии с 
+            <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core/blob/main/TERMS.md" 
+               class="text-sky-500 hover:underline">условиями открытой лицензии</a>.
+        </p>
+        <p class="mt-2">
+            Repository: 
+            <a href="https://github.com/sfiraliumlab-ux/Sfiralium-Core" class="text-sky-500 hover:underline">
+                github.com/sfiraliumlab-ux/Sfiralium-Core
+            </a>
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
     <script>
-        // Убираем сообщение о загрузке
-        window.addEventListener('load', () => {
-            const loading = document.getElementById('loading');
-            if (loading) loading.style.display = 'none';
-        });
+        // === 3D Sfiral Visualization with Three.js ===
+        let scene, camera, renderer, controls;
+        let vMinusCoil, vPlusCoil, sLoop, centralNode;
+        let isRotating = true;
+        let isWireframe = false;
+        let time = 0;
 
-        // Инициализация Three.js
-        let scene, camera, renderer, sfiraliumGroup;
-        let animationId;
-
-        function init() {
-            try {
-                // Сцена
-                scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x0f172a);
-                scene.fog = new THREE.Fog(0x0f172a, 10, 50);
-
-                // Камера
-                camera = new THREE.PerspectiveCamera(
-                    75,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    1000
-                );
-                camera.position.set(0, 0, 15);
-
-                // Рендерер
-                renderer = new THREE.WebGLRenderer({ antialias: true });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-                document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-                // Освещение
-                const ambientLight = new THREE.AmbientLight(0x404040, 2);
-                scene.add(ambientLight);
-
-                const pointLight1 = new THREE.PointLight(0x38bdf8, 2, 50);
-                pointLight1.position.set(10, 10, 10);
-                scene.add(pointLight1);
-
-                const pointLight2 = new THREE.PointLight(0xa855f7, 2, 50);
-                pointLight2.position.set(-10, -10, 10);
-                scene.add(pointLight2);
-
-                // Создаем сфиральную структуру
-                createSfiraliumStructure();
-
-                // Обработчик изменения размера окна
-                window.addEventListener('resize', onWindowResize);
-
-                // Запуск анимации
-                animate();
-
-                console.log('Three.js инициализирован успешно');
-            } catch (error) {
-                console.error('Ошибка инициализации Three.js:', error);
-                const loading = document.getElementById('loading');
-                if (loading) {
-                    loading.textContent = 'Ошибка загрузки 3D: ' + error.message;
-                    loading.style.color = '#ef4444';
-                }
-            }
+        function init3D() {
+            const container = document.getElementById('sfiralCanvas3D');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / 500, 0.1, 1000);
+            camera.position.set(0, 0, 8);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, 500);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+            
+            const pointLight1 = new THREE.PointLight(0x38bdf8, 2, 50);
+            pointLight1.position.set(-5, 5, 5);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xa78bfa, 2, 50);
+            pointLight2.position.set(5, -5, 5);
+            scene.add(pointLight2);
+            
+            // Create V- coil (left, sky blue)
+            const vMinusGeometry = createHelixGeometry(-3, 0.8, 20, 3);
+            const vMinusMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x38bdf8,
+                emissive: 0x1e40af,
+                emissiveIntensity: 0.3,
+                shininess: 100,
+                wireframe: false
+            });
+            vMinusCoil = new THREE.Mesh(vMinusGeometry, vMinusMaterial);
+            scene.add(vMinusCoil);
+            
+            // Create V+ coil (right, purple) - mirror antisymmetric
+            const vPlusGeometry = createHelixGeometry(3, 0.8, 20, -3);
+            const vPlusMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xa78bfa,
+                emissive: 0x5b21b6,
+                emissiveIntensity: 0.3,
+                shininess: 100,
+                wireframe: false
+            });
+            vPlusCoil = new THREE.Mesh(vPlusGeometry, vPlusMaterial);
+            scene.add(vPlusCoil);
+            
+            // Create S-loop (amber)
+            const sLoopGeometry = createSLoopGeometry();
+            const sLoopMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xfbbf24,
+                emissive: 0xb45309,
+                emissiveIntensity: 0.5,
+                shininess: 100
+            });
+            sLoop = new THREE.Mesh(sLoopGeometry, sLoopMaterial);
+            scene.add(sLoop);
+            
+            // Create central node
+            const nodeGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+            const nodeMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xfbbf24,
+                emissive: 0xf59e0b,
+                emissiveIntensity: 0.8
+            });
+            centralNode = new THREE.Mesh(nodeGeometry, nodeMaterial);
+            scene.add(centralNode);
+            
+            // Add particles
+            addParticles();
+            
+            // Animation loop
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
         }
 
-        function createSfiraliumStructure() {
-            sfiraliumGroup = new THREE.Group();
-
-            // Параметры для генерации точек (как в Blender скрипте)
-            const segments = 128;
-            const radius = 2.5; // Уменьшено с 5 до 2.5 для лучшего масштабирования
-            const coilHeight = 1.5;
+        function createHelixGeometry(offsetX, radius, turns, height) {
+            const curve = new THREE.CatmullRomCurve3([]);
+            const points = [];
+            const segments = 200;
             
-            // Массивы для хранения точек
-            const leftCoilPoints = [];
-            const rightCoilPoints = [];
-            const sCurvePoints = [];
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments;
+                const angle = t * turns * Math.PI * 2;
+                const x = offsetX + Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const z = (t - 0.5) * height;
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            
+            curve.points = points;
+            return new THREE.TubeGeometry(curve, 100, 0.08, 8, false);
+        }
 
-            // Генерация основного витка (левая сторона)
+        function createSLoopGeometry() {
+            const points = [];
+            const segments = 100;
+            
             for (let i = 0; i <= segments; i++) {
                 const t = i / segments;
                 const angle = t * Math.PI * 2;
                 
-                // Основная спираль
-                const x = -radius * Math.cos(angle);
-                const y = -radius * Math.sin(angle);
-                const z = (t - 0.5) * coilHeight;
+                // S-curve from left to right
+                const x = -3 + t * 6;
+                const y = Math.sin(angle) * 0.5 * Math.sin(t * Math.PI);
+                const z = Math.cos(angle * 2) * 0.3;
                 
-                leftCoilPoints.push(new THREE.Vector3(x, y, z));
-                
-                // Правая сторона (зеркальная антисимметрия)
-                const xRight = radius * Math.cos(angle);
-                const yRight = radius * Math.sin(angle);
-                const zRight = (t - 0.5) * coilHeight;
-                
-                rightCoilPoints.push(new THREE.Vector3(xRight, yRight, zRight));
+                points.push(new THREE.Vector3(x, y, z));
             }
-
-            // Генерация S-образного перехода
-            const sSegments = 32;
-            for (let i = 0; i <= sSegments; i++) {
-                const t = i / sSegments;
-                
-                // S-кривая (сигмоида)
-                const sCurve = 2 * t - 1;
-                const x = 0;
-                const y = radius * sCurve;
-                const z = (t - 0.5) * coilHeight * 0.5;
-                
-                sCurvePoints.push(new THREE.Vector3(x, y, z));
-            }
-
-            // Материалы
-            const leftMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x38bdf8,
-                linewidth: 2,
-                transparent: true,
-                opacity: 0.8
-            });
-
-            const rightMaterial = new THREE.LineBasicMaterial({ 
-                color: 0xa855f7,
-                linewidth: 2,
-                transparent: true,
-                opacity: 0.8
-            });
-
-            const sCurveMaterial = new THREE.LineBasicMaterial({ 
-                color: 0xffffff,
-                linewidth: 3,
-                transparent: true,
-                opacity: 0.9
-            });
-
-            // Создаем линии
-            const leftGeometry = new THREE.BufferGeometry().setFromPoints(leftCoilPoints);
-            const leftLine = new THREE.Line(leftGeometry, leftMaterial);
-            sfiraliumGroup.add(leftLine);
-
-            const rightGeometry = new THREE.BufferGeometry().setFromPoints(rightCoilPoints);
-            const rightLine = new THREE.Line(rightGeometry, rightMaterial);
-            sfiraliumGroup.add(rightLine);
-
-            const sCurveGeometry = new THREE.BufferGeometry().setFromPoints(sCurvePoints);
-            const sCurveLine = new THREE.Line(sCurveGeometry, sCurveMaterial);
-            sfiraliumGroup.add(sCurveLine);
-
-            // Добавляем светящиеся точки в ключевых позициях
-            addGlowingPoints();
-
-            // Добавляем группу в сцену
-            scene.add(sfiraliumGroup);
-
-            console.log('Сфиральная структура создана');
-        }
-
-        function addGlowingPoints() {
-            // Создаем светящиеся сферы в ключевых точках
-            const pointGeometry = new THREE.SphereGeometry(0.15, 16, 16);
             
-            // Левая точка
-            const leftMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0x38bdf8,
-                transparent: true,
-                opacity: 0.9
-            });
-            const leftPoint = new THREE.Mesh(pointGeometry, leftMaterial);
-            leftPoint.position.set(-2.5, 0, 0);
-            sfiraliumGroup.add(leftPoint);
-
-            // Правая точка
-            const rightMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xa855f7,
-                transparent: true,
-                opacity: 0.9
-            });
-            const rightPoint = new THREE.Mesh(pointGeometry, rightMaterial);
-            rightPoint.position.set(2.5, 0, 0);
-            sfiraliumGroup.add(rightPoint);
-
-            // Центральная точка (S-переход)
-            const centerMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xffffff,
-                transparent: true,
-                opacity: 1
-            });
-            const centerPoint = new THREE.Mesh(pointGeometry, centerMaterial);
-            centerPoint.position.set(0, 0, 0);
-            sfiraliumGroup.add(centerPoint);
-
-            // Добавляем свечение (emissive effect) через дополнительные сферы
-            const glowGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-            const glowMaterial = new THREE.MeshBasicMaterial({
-                color: 0x38bdf8,
-                transparent: true,
-                opacity: 0.3
-            });
-            const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-            glowMesh.position.set(0, 0, 0);
-            sfiraliumGroup.add(glowMesh);
+            const curve = new THREE.CatmullRomCurve3(points);
+            return new THREE.TubeGeometry(curve, 50, 0.1, 8, false);
         }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        function addParticles() {
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 500;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
         }
 
         function animate() {
-            animationId = requestAnimationFrame(animate);
-
-            // Вращение сфиральной структуры
-            if (sfiraliumGroup) {
-                sfiraliumGroup.rotation.x += 0.003;
-                sfiraliumGroup.rotation.y += 0.005;
+            requestAnimationFrame(animate);
+            
+            if (isRotating) {
+                time += 0.005;
+                
+                // Rotate coils
+                vMinusCoil.rotation.y = time;
+                vPlusCoil.rotation.y = -time;
+                
+                // Pulse central node
+                const scale = 1 + Math.sin(time * 2) * 0.1;
+                centralNode.scale.set(scale, scale, scale);
             }
-
+            
+            controls.update();
             renderer.render(scene, camera);
         }
 
-        // Инициализация при загрузке страницы
-        window.addEventListener('DOMContentLoaded', init);
+        function onWindowResize() {
+            const container = document.getElementById('sfiralCanvas3D');
+            camera.aspect = container.clientWidth / 500;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, 500);
+        }
 
-        // Очистка при закрытии страницы
-        window.addEventListener('beforeunload', () => {
-            if (animationId) {
-                cancelAnimationFrame(animationId);
+        // Initialize 3D when page loads
+        window.addEventListener('load', init3D);
+
+        // Controls
+        document.getElementById('toggleRotation').addEventListener('click', () => {
+            isRotating = !isRotating;
+            document.getElementById('toggleRotation').textContent = isRotating ? 'Пауза вращения' : 'Продолжить вращение';
+        });
+
+        document.getElementById('toggleWires').addEventListener('click', () => {
+            isWireframe = !isWireframe;
+            vMinusCoil.material.wireframe = isWireframe;
+            vPlusCoil.material.wireframe = isWireframe;
+            sLoop.material.wireframe = isWireframe;
+            document.getElementById('toggleWires').textContent = isWireframe ? 'Поверхность' : 'Каркас';
+        });
+
+        document.getElementById('resetCamera').addEventListener('click', () => {
+            camera.position.set(0, 0, 8);
+            controls.reset();
+        });
+
+        // === Sfiral Neuron Demo ===
+        document.getElementById('processBtn').addEventListener('click', () => {
+            const inputStr = document.getElementById('inputVector').value;
+            const input = inputStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+            
+            if (input.length === 0) {
+                alert('Введите корректный вектор чисел');
+                return;
             }
-            if (renderer) {
-                renderer.dispose();
-            }
+            
+            // Simulate Sfiral processing
+            const vMinus = input.map(x => Math.tanh(x * 0.8));
+            const vPlus = input.map(x => -Math.tanh(x * 0.8));
+            const alpha = 0.6;
+            const beta = Math.sqrt(1 - alpha * alpha);
+            const output = input.map((_, i) => alpha * vMinus[i] + beta * vPlus[i]);
+            
+            // Display results
+            const outputDiv = document.getElementById('outputResult');
+            const outputContent = document.getElementById('outputContent');
+            outputDiv.classList.remove('hidden');
+            
+            outputContent.innerHTML = `
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-slate-400">Входной вектор (x):</span>
+                        <div class="text-white mt-1">[${input.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-sky-400">Ветвь V⁻ (прошлое):</span>
+                        <div class="text-white mt-1">[${vMinus.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-purple-400">Ветвь V⁺ (будущее):</span>
+                        <div class="text-white mt-1">[${vPlus.map(n => n.toFixed(3)).join(', ')}]</div>
+                    </div>
+                    <div>
+                        <span class="text-amber-400">S-петля (α=${alpha.toFixed(2)}, β=${beta.toFixed(2)}):</span>
+                        <div class="text-white mt-1">α·V⁻ + β·V⁺</div>
+                    </div>
+                    <div class="border-t border-slate-700 pt-3">
+                        <span class="text-green-400 font-bold">Выход (y):</span>
+                        <div class="text-white mt-1 font-bold">[${output.map(n => n.toFixed(4)).join(', ')}]</div>
+                    </div>
+                </div>
+            `;
         });
     </script>
 </body>
