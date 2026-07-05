@@ -27,21 +27,19 @@
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans antialiased">
 
-    <!-- Header -->
     <header class="sfiral-gradient border-b border-slate-700">
         <div class="container mx-auto px-6 py-16 text-center">
             <div class="flex justify-center mb-6">
                 <svg width="120" height="120" viewBox="0 0 200 200" class="animate-spin" style="animation-duration: 20s;">
                     <defs>
-                        <linearGradient id="sfiralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="sfiralGrad" x1="0%" y1="100%" x2="100%" y2="0%">
                             <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
                         </linearGradient>
                     </defs>
-                    <path d="M 50 100 Q 100 50 150 100 T 50 100" 
-                          fill="none" stroke="url(#sfiralGrad)" stroke-width="3"/>
-                    <circle cx="50" cy="100" r="25" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
-                    <circle cx="150" cy="100" r="25" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.8"/>
+                    <path d="M 50 150 A 35 35 0 1 1 85 115 C 100 115, 100 85, 115 85 A 35 35 0 1 1 150 50" 
+                          fill="none" stroke="url(#sfiralGrad)" stroke-width="4" stroke-linecap="round"/>
                     <circle cx="100" cy="100" r="5" fill="#fbbf24"/>
                 </svg>
             </div>
@@ -65,7 +63,6 @@
         </div>
     </header>
 
-    <!-- 3D Sfiral Visualization -->
     <section class="container mx-auto px-6 py-16">
         <h2 class="text-3xl font-bold text-center mb-8 text-sky-400">3D Визуализация Сфирали</h2>
         <div class="sfiral-canvas rounded-xl p-4 max-w-6xl mx-auto">
@@ -87,7 +84,6 @@
         </div>
     </section>
 
-    <!-- Features -->
     <section id="docs" class="container mx-auto px-6 py-16">
         <h2 class="text-3xl font-bold text-center mb-12">Архитектура Сфиральных Нейронов (СИН)</h2>
         <div class="grid md:grid-cols-3 gap-8">
@@ -109,7 +105,6 @@
         </div>
     </section>
 
-    <!-- Interactive Demo -->
     <section id="demo" class="bg-slate-950 py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-8">Интерактивное демо: СИН-слой</h2>
@@ -131,7 +126,6 @@
         </div>
     </section>
 
-    <!-- Code Preview -->
     <section class="bg-slate-950 py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-8">Быстрый старт</h2>
@@ -163,7 +157,6 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         </div>
     </section>
 
-    <!-- Math Core -->
     <section class="container mx-auto px-6 py-16">
         <h2 class="text-3xl font-bold text-center mb-8">Математическое ядро</h2>
         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -202,7 +195,6 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         </div>
     </section>
 
-    <!-- GitHub Links -->
     <section class="bg-slate-950 py-16">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold mb-8">Исходный код</h2>
@@ -223,7 +215,6 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="text-center py-8 text-slate-500 text-sm border-t border-slate-800">
         <p>© 2025 Sfiralium Project. Based on the works of O.S. Basargin.</p>
         <p class="mt-2">
@@ -239,11 +230,11 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         </p>
     </footer>
 
-    <!-- JavaScript -->
     <script>
         // === 3D Sfiral Visualization with Three.js ===
         let scene, camera, renderer, controls;
         let vMinusCoil, vPlusCoil, sLoop, centralNode;
+        let sfiralGroup;
         let isRotating = true;
         let isWireframe = false;
         let time = 0;
@@ -257,7 +248,7 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
             
             // Camera
             camera = new THREE.PerspectiveCamera(75, container.clientWidth / 500, 0.1, 1000);
-            camera.position.set(0, 0, 8);
+            camera.position.set(0, 0, 15);
             
             // Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -275,121 +266,127 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
             scene.add(ambientLight);
             
             const pointLight1 = new THREE.PointLight(0x38bdf8, 2, 50);
-            pointLight1.position.set(-5, 5, 5);
+            pointLight1.position.set(-10, 10, 10);
             scene.add(pointLight1);
             
             const pointLight2 = new THREE.PointLight(0xa78bfa, 2, 50);
-            pointLight2.position.set(5, -5, 5);
+            pointLight2.position.set(10, -10, 10);
             scene.add(pointLight2);
+
+            // Sfiral Core Logic Translation
+            sfiralGroup = new THREE.Group();
             
-            // Create V- coil (left, sky blue)
-            const vMinusGeometry = createHelixGeometry(-3, 0.8, 20, 3);
+            const R_coil = 4.0;
+            const R_arc = R_coil / 2.0;
+            const Height_Coil = 3.0;
+            const Height_S = 1.0;
+            const Turns = 1.0;
+            const Resolution = 300;
+
+            const s_arc_right = [];
+            const coil_right = [];
+            
+            // Part 1: S-Arc Right
+            const res_arc = Math.floor(Resolution * 0.3);
+            for (let i = 0; i <= res_arc; i++) {
+                const t = i / res_arc;
+                const phi = Math.PI * (1 - t);
+                const x = R_arc + R_arc * Math.cos(phi);
+                const y = -R_arc * Math.sin(phi);
+                const z = (Height_S / 2) * t;
+                s_arc_right.push(new THREE.Vector3(x, y, z));
+            }
+
+            // Part 2: Main Coil Right
+            const res_coil = Math.floor(Resolution * 0.7);
+            const z_start_coil = Height_S / 2;
+            for (let i = 1; i <= res_coil; i++) {
+                const t = i / res_coil;
+                const theta = Turns * 2 * Math.PI * t;
+                const x = R_coil * Math.cos(theta);
+                const y = R_coil * Math.sin(theta);
+                const z = z_start_coil + (Height_Coil * t);
+                coil_right.push(new THREE.Vector3(x, y, z));
+            }
+
+            // Inversion (Left Part)
+            const s_arc_left = [];
+            for (let i = s_arc_right.length - 1; i >= 0; i--) {
+                const p = s_arc_right[i];
+                if (p.x === 0 && p.y === 0 && p.z === 0) continue;
+                s_arc_left.push(new THREE.Vector3(-p.x, -p.y, -p.z));
+            }
+
+            const coil_left = [];
+            for (let i = coil_right.length - 1; i >= 0; i--) {
+                const p = coil_right[i];
+                coil_left.push(new THREE.Vector3(-p.x, -p.y, -p.z));
+            }
+
+            // Create Continuous Paths but split for visual identity
+            const vMinusCurve = new THREE.CatmullRomCurve3(coil_left.concat(s_arc_left.slice(0, 2))); 
+            const sLoopCurve = new THREE.CatmullRomCurve3(s_arc_left.concat(s_arc_right));
+            const vPlusCurve = new THREE.CatmullRomCurve3([s_arc_right[s_arc_right.length-1]].concat(coil_right));
+
+            const tubeRadius = 0.15;
+            const radialSegments = 12;
+
+            // V- Coil
+            const vMinusGeometry = new THREE.TubeGeometry(vMinusCurve, 100, tubeRadius, radialSegments, false);
             const vMinusMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x38bdf8,
-                emissive: 0x1e40af,
-                emissiveIntensity: 0.3,
-                shininess: 100,
-                wireframe: false
+                color: 0x38bdf8, emissive: 0x1e40af, emissiveIntensity: 0.3, shininess: 100
             });
             vMinusCoil = new THREE.Mesh(vMinusGeometry, vMinusMaterial);
-            scene.add(vMinusCoil);
+            sfiralGroup.add(vMinusCoil);
             
-            // Create V+ coil (right, purple) - mirror antisymmetric
-            const vPlusGeometry = createHelixGeometry(3, 0.8, 20, -3);
+            // V+ Coil
+            const vPlusGeometry = new THREE.TubeGeometry(vPlusCurve, 100, tubeRadius, radialSegments, false);
             const vPlusMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0xa78bfa,
-                emissive: 0x5b21b6,
-                emissiveIntensity: 0.3,
-                shininess: 100,
-                wireframe: false
+                color: 0xa78bfa, emissive: 0x5b21b6, emissiveIntensity: 0.3, shininess: 100
             });
             vPlusCoil = new THREE.Mesh(vPlusGeometry, vPlusMaterial);
-            scene.add(vPlusCoil);
+            sfiralGroup.add(vPlusCoil);
             
-            // Create S-loop (amber)
-            const sLoopGeometry = createSLoopGeometry();
+            // S-Loop
+            const sLoopGeometry = new THREE.TubeGeometry(sLoopCurve, 60, tubeRadius, radialSegments, false);
             const sLoopMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0xfbbf24,
-                emissive: 0xb45309,
-                emissiveIntensity: 0.5,
-                shininess: 100
+                color: 0xfbbf24, emissive: 0xb45309, emissiveIntensity: 0.5, shininess: 100
             });
             sLoop = new THREE.Mesh(sLoopGeometry, sLoopMaterial);
-            scene.add(sLoop);
+            sfiralGroup.add(sLoop);
             
-            // Create central node
-            const nodeGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+            // Central Node
+            const nodeGeometry = new THREE.SphereGeometry(0.4, 32, 32);
             const nodeMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0xfbbf24,
-                emissive: 0xf59e0b,
-                emissiveIntensity: 0.8
+                color: 0xfbbf24, emissive: 0xf59e0b, emissiveIntensity: 0.8
             });
             centralNode = new THREE.Mesh(nodeGeometry, nodeMaterial);
-            scene.add(centralNode);
+            sfiralGroup.add(centralNode);
+
+            // Orient the group for better viewing
+            sfiralGroup.rotation.x = Math.PI / 4;
+            scene.add(sfiralGroup);
             
-            // Add particles
             addParticles();
-            
-            // Animation loop
             animate();
-            
-            // Handle resize
             window.addEventListener('resize', onWindowResize);
-        }
-
-        function createHelixGeometry(offsetX, radius, turns, height) {
-            const curve = new THREE.CatmullRomCurve3([]);
-            const points = [];
-            const segments = 200;
-            
-            for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const angle = t * turns * Math.PI * 2;
-                const x = offsetX + Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                const z = (t - 0.5) * height;
-                points.push(new THREE.Vector3(x, y, z));
-            }
-            
-            curve.points = points;
-            return new THREE.TubeGeometry(curve, 100, 0.08, 8, false);
-        }
-
-        function createSLoopGeometry() {
-            const points = [];
-            const segments = 100;
-            
-            for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const angle = t * Math.PI * 2;
-                
-                // S-curve from left to right
-                const x = -3 + t * 6;
-                const y = Math.sin(angle) * 0.5 * Math.sin(t * Math.PI);
-                const z = Math.cos(angle * 2) * 0.3;
-                
-                points.push(new THREE.Vector3(x, y, z));
-            }
-            
-            const curve = new THREE.CatmullRomCurve3(points);
-            return new THREE.TubeGeometry(curve, 50, 0.1, 8, false);
         }
 
         function addParticles() {
             const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 500;
+            const particlesCount = 800;
             const posArray = new Float32Array(particlesCount * 3);
             
             for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 15;
+                posArray[i] = (Math.random() - 0.5) * 25;
             }
             
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
             const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.02,
+                size: 0.03,
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.6
+                opacity: 0.5
             });
             
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -402,12 +399,12 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
             if (isRotating) {
                 time += 0.005;
                 
-                // Rotate coils
-                vMinusCoil.rotation.y = time;
-                vPlusCoil.rotation.y = -time;
+                // Вращение всей системы как единого целого
+                sfiralGroup.rotation.y = time;
+                sfiralGroup.rotation.z = Math.sin(time * 0.5) * 0.2;
                 
-                // Pulse central node
-                const scale = 1 + Math.sin(time * 2) * 0.1;
+                // Пульсация центрального узла
+                const scale = 1 + Math.sin(time * 4) * 0.15;
                 centralNode.scale.set(scale, scale, scale);
             }
             
@@ -428,7 +425,7 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         // Controls
         document.getElementById('toggleRotation').addEventListener('click', () => {
             isRotating = !isRotating;
-            document.getElementById('toggleRotation').textContent = isRotating ? 'Пауза вращения' : 'Продолжить вращение';
+            document.getElementById('toggleRotation').textContent = isRotating ? 'Продолжить вращение' : 'Пауза вращения';
         });
 
         document.getElementById('toggleWires').addEventListener('click', () => {
@@ -440,7 +437,8 @@ print(output.shape)  # torch.Size([32, 5])</code></pre>
         });
 
         document.getElementById('resetCamera').addEventListener('click', () => {
-            camera.position.set(0, 0, 8);
+            camera.position.set(0, 0, 15);
+            sfiralGroup.rotation.set(Math.PI / 4, time, Math.sin(time * 0.5) * 0.2);
             controls.reset();
         });
 
