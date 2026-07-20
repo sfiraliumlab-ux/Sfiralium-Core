@@ -135,8 +135,6 @@ Sfiralium-Core/
 
 - **Репозиторий:** [github.com/sfiraliumlab-ux/Sfiralium-Core](https://github.com/sfiraliumlab-ux/Sfiralium-Core)
 - **Интерактивная демонстрация:** [sfiraliumlab-ux.github.io/Sfiralium-Core](https://sfiraliumlab-ux.github.io/Sfiralium-Core)
-- **Китайская документация:** [Ссылка на китайскую версию документации]
-- **QR-код для быстрого доступа:** [QR-код ведет на китайский репозиторий]
 
 ---
 
