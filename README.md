@@ -137,8 +137,6 @@ Sfiralium-Core/
 
 - **Репозиторий:** [github.com/sfiraliumlab-ux/Sfiralium-Core](https://github.com/sfiraliumlab-ux/Sfiralium-Core)
 - **Интерактивная демонстрация:** [sfiraliumlab-ux.github.io/Sfiralium-Core](https://sfiraliumlab-ux.github.io/Sfiralium-Core)
-- **Китайская документация:** [Ссылка на китайскую версию документации]
-- **QR-код для быстрого доступа:** [QR-код ведет на китайский репозиторий]
 
 ---
 
@@ -148,7 +146,7 @@ Sfiralium-Core/
 
 **Stanislav Chernenko**  
 Technical Partner, Time Research Foundation  
-Email: [Ваш email]  
+Email: sfiralium.lab@gmail.com  
 GitHub: [https://github.com/stanislavsfiral](https://github.com/stanislavsfiral)
 ```
 
